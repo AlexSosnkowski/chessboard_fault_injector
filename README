@@ -1,0 +1,15 @@
+# Welcome
+
+This is a simulator for a Hall effect digital chessboard. It injects faults into the micocontroller for the chessboard by simulating the analog readings of the Hall effect sensors through a dac.
+
+This uses ciruit python.
+
+There are a few relevant files. Mainly, the code.py is the main code file that is put onto the board.
+
+Commands needed to connect to the device
+
+ls /dev/tty*
+to find device (probably AM0, AM1, ...)
+
+screen /dev/ttyACM4 115200
+to connect
