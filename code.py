@@ -89,7 +89,7 @@ def get_binary(pins):
     return value
 
 
-def read_chess_piece():
+def read_board_position():
     nums_to_let = ["A","B","C","D","H","G","F","E"]
 
     letter = nums_to_let[get_binary(letter_pins)]
@@ -97,6 +97,10 @@ def read_chess_piece():
     number = get_binary(number_pins)
 
     return letter + str(number)
+
+#this assumes a default board setup
+def read_board_piece():
+    pass
 
 #for the state machine
 #Fault types:

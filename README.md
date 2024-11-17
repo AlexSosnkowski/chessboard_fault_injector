@@ -53,6 +53,7 @@ The pins on the Pi Pico 2 for this are:
 
 
 
+
 # To Do
 
 Read in from the input pins, calculate dac value, output it, reset. 
@@ -61,6 +62,13 @@ Should there be a way to communicate that the controller should change to a new 
 
 Implement various modes of failure. 
 
+More details:
+
+1) calculate distance from center and add guassian noise 
+2) based on sensor model, calculate distance and interpolate to get the DAC value (use percentages between 0 and 1)
+3) output the actual reading (also print to serial console)
+
+Lots of testing
 
 # Links
 
