@@ -11,10 +11,12 @@ There are a few relevant files. Mainly, the code.py is the main code file that i
 Commands needed to connect to the device
 
 to find device (probably AM0, AM1, ...)
-ls /dev/tty*
+
+"ls /dev/tty*"
 
 to connect to the board through serial usb
-screen /dev/ttyACM4 115200
+
+"screen /dev/ttyACM4 115200"
 
 This should then recieve anything sent with print()
 REPL can also be entered to quickly test code snipets like normal python REPL
