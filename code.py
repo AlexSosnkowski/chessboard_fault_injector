@@ -38,19 +38,22 @@ adc = analogio.AnalogIn(board.GP28)
 # amp = adafruit_max9744.MAX9744(i2c, address=0x63)
 
 # There are a three ways to set the DAC output, you can use any of these:
-dac.value = 65535  # Use the value property with a 16-bit number just like
+#dac.value = 65535  # Use the value property with a 16-bit number just like
 # the AnalogOut class.  Note the MCP4725 is only a 12-bit
 # DAC so quantization errors will occur.  The range of
 # values is 0 (minimum/ground) to 65535 (maximum/Vout).
 
-dac.raw_value = 4095  # Use the raw_value property to directly read and write
+#dac.raw_value = 4095  # Use the raw_value property to directly read and write
 # the 12-bit DAC value.  The range of values is
 # 0 (minimum/ground) to 4095 (maximum/Vout).
 
-dac.normalized_value = 1.0  # Use the normalized_value property to set the
+#dac.normalized_value = 1.0  # Use the normalized_value property to set the
 # output with a floating point value in the range
 # 0 to 1.0 where 0 is minimum/ground and 1.0 is
 # maximum/Vout.
+
+#set dac to zero
+dac.normalized_value = 0.0
 
 #input pins for chess piece - not sure if I need pull downs here!!!!
 def setPinsInput(pins):
@@ -183,22 +186,30 @@ def get_DAC_output(piece, polar, std=1.0):
 
 #SETTINGS !!!!!
 FAILURE_MODE = failure_mode.PLACEMENT
+STD_DEV = 1.0
 
 # Main loop
 print(f"Simulation beggining with failure mode {FAILURE_MODE}.")
+prev_place = ""
 
 while True:
+    curr_place = read_board_position
+    if curr_place == prev_place:
+        continue
+    else:
+        prev_place = curr_place
     #read in the inputs
     #position = read_board_position()
     #simulate failure mode
 
     #testing
-    example = (piece_type.PAWN, polarity.WHITE)
-    print(get_DAC_output(*example))
-    time.sleep(0.5)
+    #example = (piece_type.PAWN, polarity.WHITE)
+    #print(get_DAC_output(*example))
+    #time.sleep(0.5)
 
     if FAILURE_MODE == failure_mode.PLACEMENT:
-        pass
+        p = read_board_piece(curr_place)
+        dac.normalized_value = get_DAC_output(p, STD_DEV)
     else:
         pass
     # Go up the 12-bit raw range.

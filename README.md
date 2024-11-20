@@ -66,10 +66,10 @@ Implement various modes of failure.
 
 More details:
 
-1) calculate distance from center and add guassian noise 
-2) based on sensor model, calculate distance and interpolate to get the DAC value (use percentages between 0 and 1)
-3) output the actual reading (also print to serial console)
-
+1) double check that this is the correct way to handle displacement outputs on the DAC
+2) code in other faults and / or dual or triple redundant sensor systems
+3) can we code in other sensor failures (i.e sensor randomly breaks with a poisson distribution)
+4) How can we communicate what the ground truth piece should be (i2c or serial, ect.) or can the other MCU assume a ground truth of default board layout?
 Lots of testing
 
 # Links
