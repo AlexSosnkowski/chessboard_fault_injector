@@ -65,8 +65,9 @@ def setPinsInput(pins):
         pin_objects.append(dio)
 
     return pin_objects
-
+# a1 a2 a3
 letter_pins = setPinsInput([board.GP21, board.GP20, board.GP19])
+# b1 b2 b3
 number_pins = setPinsInput([board.GP18, board.GP17, board.GP16])
 
 
@@ -143,7 +144,7 @@ def read_board_piece(pos):
 
 #double check this table and also convert it into another file later
 READING_VALUES = {
-    piece_type.EMPTY: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], # this seems wrong
+    piece_type.EMPTY: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5], # this seems wrong
     piece_type.PAWN: [16383.0 / 16383.0, 16383.0 / 16383.0, 16186.0 / 16383.0, 16186.0 / 16383.0, 15988.0 / 16383.0, 10659.0 / 16383.0, 7698.0 / 16383.0, 7106.0  / 16383.0],
     piece_type.BISHOP: [15001.0  / 16383.0, 15001.0  / 16383.0, 14804.0  / 16383.0, 13225.0  / 16383.0, 12041.0  / 16383.0, 10264.0  / 16383.0, 9277.0  / 16383.0, 8685.0  / 16383.0],
     piece_type.KNIGHT: [13225.0  / 16383.0, 12633.0  / 16383.0, 12238.0  / 16383.0, 12041.0  / 16383.0, 11448.0  / 16383.0, 10659.0  / 16383.0, 9475.0  / 16383.0, 8882.0  / 16383.0],

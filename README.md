@@ -44,14 +44,14 @@ e.g 000->1...111->7.
 The pins on the Pi Pico 2 for this are:
 
     3 pins for letter:
-        a_1 = GP21
-        a_2 = GP20
-        a_3 = gp19
+        a_1 = GP21 - white
+        a_2 = GP20 - grey
+        a_3 = gp19 - purple
 
     3 pins for number:
-        b_1 = GP18
-        b_2 = GP17
-        b_3 = GP16
+        b_1 = GP18 - blue
+        b_2 = GP17 - green
+        b_3 = GP16 - yellow 
 
 
 
