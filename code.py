@@ -112,10 +112,11 @@ def read_board_position():
 #this assumes a default board setup
 #not great but maybe more memory efficent than a big matrix of pieces
 def read_board_piece(pos):
-    pos = pos.split("_")
-    letter = pos[0]
-    number = int(pos[1])
-
+    #pos = pos.split("_")
+    #letter = pos[0]
+    #number = int(pos[1])
+    letter = pos[:1]
+    number = int(pos[2:])
     if number <= 2:
         polar = polarity.WHITE
     else:
@@ -187,14 +188,14 @@ def get_DAC_output(piece, polar, std=1.0):
 
 #SETTINGS !!!!!
 FAILURE_MODE = failure_mode.PLACEMENT
-STD_DEV = 1.0
+STD_DEV = 0.001
 
 # Main loop
 print(f"Simulation beggining with failure mode {FAILURE_MODE}.")
 prev_place = ""
 
 while True:
-    curr_place = read_board_position
+    curr_place = read_board_position()
     if curr_place == prev_place:
         continue
     else:
@@ -209,8 +210,8 @@ while True:
     #time.sleep(0.5)
 
     if FAILURE_MODE == failure_mode.PLACEMENT:
-        p = read_board_piece(curr_place)
-        dac.normalized_value = get_DAC_output(p, STD_DEV)
+        curr_piece, curr_polarity = read_board_piece(curr_place)
+        dac.normalized_value = get_DAC_output(curr_piece, curr_polarity, STD_DEV)
     else:
         pass
     # Go up the 12-bit raw range.
