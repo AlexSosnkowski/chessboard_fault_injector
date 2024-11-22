@@ -105,7 +105,7 @@ def read_board_position():
 
     letter = nums_to_let[get_binary(letter_pins)]
 
-    number = get_binary(number_pins)
+    number = get_binary(number_pins) + 1
 
     return letter + "_" +  str(number)
 
@@ -124,7 +124,7 @@ def read_board_piece(pos):
 
     if number == 2 or number == 7:
         piece = piece_type.PAWN
-    else:
+    elif number == 1 or number == 8:
         if letter in ("A", "H"):
             piece = piece_type.ROOK
         elif letter in ("B", "G"):
@@ -133,10 +133,10 @@ def read_board_piece(pos):
             piece = piece_type.BISHOP
         elif letter == "D":
             piece = piece_type.QUEEN
-        elif letter == "E":
-            piece = piece_type.KING
         else:
-            piece = piece_type.EMPTY
+            piece = piece_type.KING
+    else:
+        piece = piece_type.EMPTY
 
     #1) piece type 2) polarity (white or black)
     return (piece, polar)
@@ -173,7 +173,7 @@ def get_DAC_output(piece, polar, std=1.0):
         output = v_1 + (displacement - float(b)) * (v_2 - v_1)
         if output > 1.0:
             print("panic!")
-        print("d", displacement, "v1", v_1, "v_2", v_2)
+        #print("d", displacement, "v1", v_1, "v_2", v_2)
         #output = constrain(output, 0.0, 1.0)
         #flip if polarity
         if polar == polarity.WHITE:
@@ -211,7 +211,13 @@ while True:
 
     if FAILURE_MODE == failure_mode.PLACEMENT:
         curr_piece, curr_polarity = read_board_piece(curr_place)
-        dac.normalized_value = get_DAC_output(curr_piece, curr_polarity, STD_DEV)
+        output = get_DAC_output(curr_piece, curr_polarity, STD_DEV)
+        dac.normalized_value = output
+        print(curr_place)
+        print("pin readings")
+        for a in letter_pins + number_pins:
+            print(a.value)
+        print(f"We are at {curr_piece} with polarity {curr_polarity} and output {output}")
     else:
         pass
     # Go up the 12-bit raw range.
