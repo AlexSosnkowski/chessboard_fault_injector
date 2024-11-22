@@ -57,12 +57,7 @@ The pins on the Pi Pico 2 for this are:
 
 
 # To Do
-
-Read in from the input pins, calculate dac value, output it, reset. 
-
-Should there be a way to communicate that the controller should change to a new piece or has finished proccessing the new piece? Timing errors?
-
-Implement various modes of failure. 
+Implement additional modes of failure. 
 
 More details:
 
