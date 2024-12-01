@@ -53,8 +53,9 @@ The pins on the Pi Pico 2 for this are:
         b_2 = GP17 - green
         b_3 = GP16 - yellow 
 
-
-
+    2 pins for the sensor select: 
+        c_1 = GP26
+        c_2 = GP22
 
 # To Do
 Implement additional modes of failure. 
