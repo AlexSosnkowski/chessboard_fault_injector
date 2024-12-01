@@ -177,7 +177,7 @@ def read_board_piece(pos):
         sensor_disp_from_center = (x_disp, -y_disp)
 
     #1) piece type 2) polarity (white or black) 3) the displacement from the center of the square
-    return (piece, polar, sensor-disp_from_center)
+    return (piece, polar, sensor_disp_from_center)
 
 #get the adc reading
 
