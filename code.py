@@ -168,13 +168,13 @@ def read_board_piece(pos):
     x_disp = 2.165 
     y_disp = 1.25 
     if select == 0:
-       sensor-disp_from_center = (0, 0) 
+       sensor_disp_from_center = (0, 0) 
     elif select == 1:
-       sensor-disp_from_center = (0, radial_disp) 
+       sensor_disp_from_center = (0, radial_disp) 
     elif select == 2:
-        sensor-disp_from_center = (-x_disp, -y_disp)
+        sensor_disp_from_center = (-x_disp, -y_disp)
     elif select == 3:
-        sensor-disp_from_center = (x_disp, -y_disp)
+        sensor_disp_from_center = (x_disp, -y_disp)
 
     #1) piece type 2) polarity (white or black) 3) the displacement from the center of the square
     return (piece, polar, sensor-disp_from_center)
@@ -225,7 +225,8 @@ def get_DAC_output(piece, polar, sensor_disp_from_center = (0,0), piece_disp_fro
 
 #SETTINGS !!!!!
 FAILURE_MODE = failure_mode.PLACEMENT
-POSIITON_DISP_STD_DEV = 2
+SIMULATING_POSITION_DISPLACEMENT = False
+POSITION_DISP_STD_DEV = 2
 
 # Main loop
 print(f"Simulation beggining with failure mode {FAILURE_MODE}.")
@@ -253,8 +254,8 @@ while True:
         # reset(position_displacements[curr_place])
         if SIMULATING_POSITION_DISPLACEMENT:
             if not (curr_place in position_displacments):
-                posx_displacement = get_scaled_gaussian_sample(0.0, POSIITON_DISP_STD_DEV) 
-                posy_displacement = get_scaled_gaussian_sample(0,0, POSIITON_DISP_STD_DEV)
+                posx_displacement = get_scaled_gaussian_sample(0.0, POSITION_DISP_STD_DEV) 
+                posy_displacement = get_scaled_gaussian_sample(0,0, POSITION_DISP_STD_DEV)
                 position_displacments[curr_place] = (posx_displacement, posy_displacement)
 
                 output = get_DAC_output(piece=curr_piece, 
