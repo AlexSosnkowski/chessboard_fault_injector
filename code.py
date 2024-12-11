@@ -267,26 +267,27 @@ while True:
         # This code assumes that we are not moving any pieces... If a piece is moved, it's value in the map should be reset:
         # reset(position_displacements[curr_place])
         if SIMULATING_POSITION_DISPLACEMENT and sensor_disp_from_center != (0.0, 0.0):
+            curr_square = curr_place[0:3]
             if not (curr_place in position_displacements):
                 posx_displacement = get_scaled_gaussian_sample(0.0, POSITION_DISP_STD_DEV)
                 posy_displacement = get_scaled_gaussian_sample(0.0, POSITION_DISP_STD_DEV)
-                position_displacements[curr_place] = (posx_displacement, posy_displacement)
+                position_displacements[curr_square] = (posx_displacement, posy_displacement)
 
                 print("position_displacements: ", position_displacements)
-                print("position_displacement: ", position_displacements[curr_place])
+                print("position_displacement: ", position_displacements[curr_square])
                 print("sensor_disp_from_center: ", sensor_disp_from_center)
                 output = get_DAC_output(
                     curr_piece,
                     curr_polarity,
                     sensor_disp_from_center,
-                    position_displacements[curr_place]
+                    position_displacements[curr_square]
                 )
             else:
                 output = get_DAC_output(
                     curr_piece,
                     curr_polarity,
                     sensor_disp_from_center,
-                    position_displacments[curr_place],
+                    position_displacments[curr_square],
                 )
         else:
             output = get_DAC_output(curr_piece, curr_polarity, sensor_disp_from_center)
