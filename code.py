@@ -229,7 +229,7 @@ def get_DAC_output(piece, polar, sensor_disp_from_center=(0, 0), piece_disp_from
     # print("d", displacement, "v1", v_1, "v_2", v_2)
     # output = constrain(output, 0.0, 1.0)
     # flip if polarity
-    if polar == polarity.WHITE:
+    if polar == polarity.BLACK:
         return output
     else:
         return 1.0 - output
@@ -238,7 +238,7 @@ def get_DAC_output(piece, polar, sensor_disp_from_center=(0, 0), piece_disp_from
 # SETTINGS !!!!!
 FAILURE_MODE = failure_mode.PLACEMENT
 SIMULATING_POSITION_DISPLACEMENT = True
-POSITION_DISP_STD_DEV = 3.0
+POSITION_DISP_STD_DEV = 1.5
 
 # Main loop
 print(f"Simulation beggining with failure mode {FAILURE_MODE}.")
