@@ -238,7 +238,7 @@ def get_DAC_output(piece, polar, sensor_disp_from_center=(0, 0), piece_disp_from
 # SETTINGS !!!!!
 FAILURE_MODE = failure_mode.PLACEMENT
 SIMULATING_POSITION_DISPLACEMENT = True
-POSITION_DISP_STD_DEV = 1.5
+POSITION_DISP_STD_DEV = 0.0
 
 # Main loop
 print(f"Simulation beggining with failure mode {FAILURE_MODE}.")
@@ -264,6 +264,8 @@ while True:
         curr_piece, curr_polarity, sensor_disp_from_center = read_board_piece(
             curr_place
         )
+        for p in sensor_select_pins:
+            print(f"{p} is {p.value}")
 
         # This code assumes that we are not moving any pieces... If a piece is moved, it's value in the map should be reset:
         # reset(position_displacements[curr_place])
@@ -275,8 +277,7 @@ while True:
                 posy_displacement = get_scaled_gaussian_sample(0.0, POSITION_DISP_STD_DEV)
                 curr_disp = (posx_displacement, posy_displacement)
 
-                print("position_displacements: ", position_displacements)
-                print("position_displacement: ", position_displacements[curr_square])
+                print("position_displacement: ", curr_disp)
                 print("sensor_disp_from_center: ", sensor_disp_from_center)
                 output = get_DAC_output(
                     curr_piece,
