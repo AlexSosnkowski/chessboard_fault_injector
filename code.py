@@ -174,13 +174,13 @@ def read_board_piece(pos):
     radial_disp = 2.5
     x_disp = 2.165
     y_disp = 1.25
-    if select == 1:
+    if select == 0:
         sensor_disp_from_center = (0.0, 0.0)
-    elif select == 2:
+    elif select == 1:
         sensor_disp_from_center = (0.0, radial_disp)
-    elif select == 3:
+    elif select == 2:
         sensor_disp_from_center = (-x_disp, -y_disp)
-    elif select == 0:
+    elif select == 3:
         sensor_disp_from_center = (x_disp, -y_disp)
 
     # 1) piece type 2) polarity (white or black) 3) the displacement from the center of the square
@@ -238,12 +238,12 @@ def get_DAC_output(piece, polar, sensor_disp_from_center=(0, 0), piece_disp_from
 FAILURE_MODE = failure_mode.PLACEMENT
 SIMULATING_POSITION_DISPLACEMENT = True
 POSITION_DISP_STD_DEV = 0.3
-position_displacements = {}
 
 # Main loop
 print(f"Simulation beggining with failure mode {FAILURE_MODE}.")
 prev_place = ""
-
+curr_disp = (0.0, 0.0) #TMR, each of the three sensors need to agree on a displacement position
+curr_disp_set_for = ""
 while True:
     curr_place = read_board_position()
     if curr_place == prev_place:
@@ -268,10 +268,11 @@ while True:
         # reset(position_displacements[curr_place])
         if SIMULATING_POSITION_DISPLACEMENT and sensor_disp_from_center != (0.0, 0.0):
             curr_square = curr_place[0:3]
-            if not (curr_place in position_displacements):
+            if curr_place != curr_disp_set_for:
+                curr_disp_set_for = curr_square
                 posx_displacement = get_scaled_gaussian_sample(0.0, POSITION_DISP_STD_DEV)
                 posy_displacement = get_scaled_gaussian_sample(0.0, POSITION_DISP_STD_DEV)
-                position_displacements[curr_square] = (posx_displacement, posy_displacement)
+                curr_disp = (posx_displacement, posy_displacement)
 
                 print("position_displacements: ", position_displacements)
                 print("position_displacement: ", position_displacements[curr_square])
@@ -280,23 +281,31 @@ while True:
                     curr_piece,
                     curr_polarity,
                     sensor_disp_from_center,
-                    position_displacements[curr_square]
+                    curr_disp,
                 )
+
             else:
                 output = get_DAC_output(
                     curr_piece,
                     curr_polarity,
                     sensor_disp_from_center,
-                    position_displacments[curr_square],
+                    curr_disp,
                 )
         else:
-            output = get_DAC_output(curr_piece, curr_polarity, sensor_disp_from_center)
+            posx_displacement = get_scaled_gaussian_sample(0.0, POSITION_DISP_STD_DEV)
+            posy_displacement = get_scaled_gaussian_sample(0.0, POSITION_DISP_STD_DEV)
+            curr_disp = (posx_displacement, posy_displacement)
+            output = get_DAC_output(curr_piece,
+                                    curr_polarity,
+                                    sensor_disp_from_center,
+                                    curr_disp,
+                                    )
 
         dac.normalized_value = output
         print(curr_place)
-        print("pin readings")
-        for a in letter_pins + number_pins:
-            print(a.value)
+        #print("pin readings")
+        #for a in letter_pins + number_pins:
+            #print(a.value)
         print(
             f"We are at {curr_piece} with polarity {curr_polarity} and output {output}"
         )
