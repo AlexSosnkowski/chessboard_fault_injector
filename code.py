@@ -205,12 +205,12 @@ def get_DAC_output(piece, polar, sensor_disp_from_center=(0, 0), piece_disp_from
 
     bins = POSITION_DISPLACMENTS[piece]
     print("getting DAC outputs")
-
+    #question about this part of the code!!!
     total_radial_displacement = (constrain(math.sqrt((piece_disp_from_center[0] - sensor_disp_from_center[0]) ** 2
                                                     + (piece_disp_from_center[1] - sensor_disp_from_center[1]) ** 2),
             0.0,
             7.0,
-        ) / 7.0 * 100
+        ) / 7.0 * (len(bins) - 1) # is this ok
     )
     total_radial_displacement_bin_low = math.floor(total_radial_displacement)
     total_radial_displacement_bin_high = math.ceil(total_radial_displacement)
@@ -218,6 +218,7 @@ def get_DAC_output(piece, polar, sensor_disp_from_center=(0, 0), piece_disp_from
     print("displacement bins: ", total_radial_displacement_bin_low, total_radial_displacement_bin_high)
 
     # do a interpolation between the bins
+    #print(f"bin length {len(bins)}")
     v_1 = bins[total_radial_displacement_bin_low] / 16383
     v_2 = bins[total_radial_displacement_bin_high] / 16383
     output = v_1 + ( (total_radial_displacement - total_radial_displacement_bin_low) * (v_2 - v_1))
@@ -237,7 +238,7 @@ def get_DAC_output(piece, polar, sensor_disp_from_center=(0, 0), piece_disp_from
 # SETTINGS !!!!!
 FAILURE_MODE = failure_mode.PLACEMENT
 SIMULATING_POSITION_DISPLACEMENT = True
-POSITION_DISP_STD_DEV = 0.3
+POSITION_DISP_STD_DEV = 3.0
 
 # Main loop
 print(f"Simulation beggining with failure mode {FAILURE_MODE}.")
