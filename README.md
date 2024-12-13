@@ -56,17 +56,18 @@ The pins on the Pi Pico 2 for this are:
     2 pins for the sensor select: 
         c_1 = GP26
         c_2 = GP22
+    
+    1 pin for request reset:
+        r_1 = GP28
+        
+    1 pin for changing variance 
+        eo_1 = GP27
+        
+crtl + c (repel) then crtl + d to reload the code (auto-reload is turned off to ensure the code doesn't reset half way through a run)
+
 
 # To Do
-Implement additional modes of failure. 
-
-More details:
-
-1) double check that this is the correct way to handle displacement outputs on the DAC
-2) code in other faults and / or dual or triple redundant sensor systems
-3) can we code in other sensor failures (i.e sensor randomly breaks with a poisson distribution)
-4) How can we communicate what the ground truth piece should be (i2c or serial, ect.) or can the other MCU assume a ground truth of default board layout?
-Lots of testing
+Graph data
 
 # Links
 

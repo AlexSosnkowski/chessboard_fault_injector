@@ -4,6 +4,11 @@
 # Simple demo of setting the DAC value up and down through its entire range
 # of values.
 
+#disable auto-reload
+import supervisor
+supervisor.runtime.autoreload = False
+
+
 # enums like chess board pieces, ect.
 from types import *
 
@@ -29,9 +34,6 @@ import random
 i2c = busio.I2C(scl=board.GP5, sda=board.GP4)
 # Initialize MCP4725 device
 dac = adafruit_mcp4725.MCP4725(i2c)
-
-# Initialize ADC input to double check the DAC is working as intended
-adc = analogio.AnalogIn(board.GP28)
 
 # Initialize position displacements interpolations
 position_displacments = {}
@@ -90,6 +92,10 @@ letter_pins = setPinsInput([board.GP21, board.GP20, board.GP19])
 number_pins = setPinsInput([board.GP18, board.GP17, board.GP16])
 # c1 c2
 sensor_select_pins = setPinsInput([board.GP26, board.GP22])
+# reset pin
+reset_pin = setPinsInput([board.GP28])[0]
+# even, odd pin to switch std dev index
+even_odd_pin = setPinsInput([board.GP27])[0]
 
 
 # helper functions
@@ -240,44 +246,74 @@ FAILURE_MODE = failure_mode.PLACEMENT
 SIMULATING_POSITION_DISPLACEMENT = True
 POSITION_DISP_STD_DEV = 0.0
 
-# Main loop
+
+#more important global variables
+
+polars = {0:"Black", 1:"White"}
+pieces = {0:"Empty", 1:"Pawn", 2:"Bishop", 3:"Knight", 4:"Rook", 5:"Queen", 6:"King"}
+
+
+#std deviations to test
+std_dev_list = [0.0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0, 3.25, 3.5, 3.75, 4.0, 4.25, 4.5, 4.75, 5.0]
+dev_index = -1
 print(f"Simulation beggining with failure mode {FAILURE_MODE}.")
 prev_place = ""
 curr_disp = (0.0, 0.0) #TMR, each of the three sensors need to agree on a displacement position
-curr_disp_set_for = ""
+even_odd = False
+
+# Main loop
 while True:
     curr_place = read_board_position()
+    #print(f"Start {curr_place}")
+
+    #curr_square = curr_place[0:3]
+
     if curr_place == prev_place:
         continue
+
     else:
         prev_place = curr_place
-    # read in the inputs
-    # position = read_board_position()
-    # simulate failure mode
 
-    # testing
-    # example = (piece_type.PAWN, polarity.WHITE)
-    # print(get_DAC_output(*example))
-    # time.sleep(0.5)
+    if curr_place == "A_1_0":
+        if dev_index >= len(std_dev_list):
+            print("finished")
+            while True:
+                continue
+        if dev_index < 0:
+            dev_index = 0
+        if even_odd != even_odd_pin.value:
+            even_odd = even_odd_pin.value
+            dev_index += 1
+            POSITION_DISP_STD_DEV = std_dev_list[dev_index]
+            print(f"switching to std_dev of {POSITION_DISP_STD_DEV}")
+
+    if dev_index < 0:
+        print("waiting")
+        continue
+
 
     if FAILURE_MODE == failure_mode.PLACEMENT:
         curr_piece, curr_polarity, sensor_disp_from_center = read_board_piece(
             curr_place
         )
-        for p in sensor_select_pins:
-            print(f"{p} is {p.value}")
 
         # This code assumes that we are not moving any pieces... If a piece is moved, it's value in the map should be reset:
         # reset(position_displacements[curr_place])
-        if SIMULATING_POSITION_DISPLACEMENT and sensor_disp_from_center != (0.0, 0.0):
-            curr_square = curr_place[0:3]
-            if curr_place != curr_disp_set_for:
-                curr_disp_set_for = curr_square
-                posx_displacement = get_scaled_gaussian_sample(0.0, POSITION_DISP_STD_DEV)
-                posy_displacement = get_scaled_gaussian_sample(0.0, POSITION_DISP_STD_DEV)
-                curr_disp = (posx_displacement, posy_displacement)
+        if sensor_disp_from_center != (0.0, 0.0):
+            curr_sensor = curr_place[4:]
+            #print(f"Sensor {curr_sensor}")
+            print("position_displacement: ", curr_disp)
+            if curr_sensor == "1":
+                if reset_pin.value:
+                    print("Reset active, lowering std dev and resampling")
+                    posx_displacement = get_scaled_gaussian_sample(0.0, POSITION_DISP_STD_DEV / 4.0)
+                    posy_displacement = get_scaled_gaussian_sample(0.0, POSITION_DISP_STD_DEV / 4.0)
+                    curr_disp = (posx_displacement, posy_displacement)
+                #else:
+                    #posx_displacement = get_scaled_gaussian_sample(0.0, POSITION_DISP_STD_DEV)
+                    #posy_displacement = get_scaled_gaussian_sample(0.0, POSITION_DISP_STD_DEV)
+                    #curr_disp = (posx_displacement, posy_displacement)
 
-                print("position_displacement: ", curr_disp)
                 print("sensor_disp_from_center: ", sensor_disp_from_center)
                 output = get_DAC_output(
                     curr_piece,
@@ -297,6 +333,7 @@ while True:
             posx_displacement = get_scaled_gaussian_sample(0.0, POSITION_DISP_STD_DEV)
             posy_displacement = get_scaled_gaussian_sample(0.0, POSITION_DISP_STD_DEV)
             curr_disp = (posx_displacement, posy_displacement)
+            print("position_displacement: ", curr_disp)
             output = get_DAC_output(curr_piece,
                                     curr_polarity,
                                     sensor_disp_from_center,
@@ -305,21 +342,9 @@ while True:
 
         dac.normalized_value = output
         print(curr_place)
-        #print("pin readings")
-        #for a in letter_pins + number_pins:
-            #print(a.value)
+
         print(
-            f"We are at {curr_piece} with polarity {curr_polarity} and output {output}"
+            f"We have a {pieces[curr_piece]} with polarity {polars[curr_polarity]} and output {output}"
         )
     else:
         pass
-    # Go up the 12-bit raw range.
-    # print("Going up 0-3.3V...")
-    # for i in range(4095):
-    # dac.raw_value = i
-    # print(f"Reading: {adc.value}")
-    # Go back down the 12-bit raw range.
-    # print("Going down 3.3-0V...")
-    # for i in range(4095, -1, -1):
-    # dac.raw_value = i
-    # print(f"Reading: {adc.value}")
